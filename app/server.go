@@ -26,8 +26,10 @@ func main() {
 		fmt.Println("Error accepting connection: ", err.Error())
 		os.Exit(1)
 	}
-	
+
 	defer conn.Close()
-	conn.Read(make([]byte, 1024))
+	var buffer = make([]byte, 1024)
+	conn.Read(buffer)
+	println("Received messsage: ", buffer)
 	conn.Write([]byte{0, 0, 0, 0, 0, 0, 0, 7})
 }
