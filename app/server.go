@@ -27,9 +27,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	defer conn.Close()
-	var buffer = make([]byte, 1024)
-	conn.Read(buffer)
-	println("Received messsage: ", buffer)
-	conn.Write([]byte{0, 0, 0, 0, 0, 0, 0, 7})
+	
+	resp := make([]byte, 8)
+	// set the first four bytes to message length (hardcoded to 8)
+	binary.BigEndian.PutUint32(resp[0:4], 8)
+	binary.BigEndian.PutUint32(resp[4:8], 7)
+	// now we need to send the response
+	_, err = conn.Write(resp)
+	if err != nil {
+		fmt.Println("Error sending response: ", err.Error())
+		os.Exit(1)
+	}
+	conn.Close()
 }
