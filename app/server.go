@@ -21,22 +21,13 @@ func main() {
 		fmt.Println("Failed to bind to port 9092")
 		os.Exit(1)
 	}
-	conn, err = l.Accept()
+	conn, err := l.Accept()
 	if err != nil {
 		fmt.Println("Error accepting connection: ", err.Error())
 		os.Exit(1)
 	}
 
-	
-	resp := make([]byte, 8)
-	// set the first four bytes to message length (hardcoded to 8)
-	binary.BigEndian.PutUint32(resp[0:4], 8)
-	binary.BigEndian.PutUint32(resp[4:8], 7)
-	// now we need to send the response
-	_, err = conn.Write(resp)
-	if err != nil {
-		fmt.Println("Error sending response: ", err.Error())
-		os.Exit(1)
-	}
-	conn.Close()
+	defer conn.Close()
+	conn.Read(make([]byte, 1024))
+	conn.Write([]byte{0, 0, 0, 0, 0, 0, 0, 7})
 }
